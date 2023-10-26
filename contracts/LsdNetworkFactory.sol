@@ -8,7 +8,7 @@ import "./interfaces/INetworkBalances.sol";
 import "./interfaces/INetworkProposal.sol";
 import "./interfaces/INodeDeposit.sol";
 import "./interfaces/IUserDeposit.sol";
-import "./interfaces/INetworkWithdraw.sol";
+import "./interfaces/INetworkWithdrawal.sol";
 import "./interfaces/ILsdNetworkFactory.sol";
 import "@openzeppelin/contracts/proxy/utils/UUPSUpgradeable.sol";
 import "@openzeppelin/contracts/proxy/utils/Initializable.sol";
@@ -190,7 +190,7 @@ contract LsdNetworkFactory is Initializable, UUPSUpgradeable, ILsdNetworkFactory
         }
 
         (success, data) = contracts._feePool.call(
-            abi.encodeWithSelector(IFeePool.init.selector, contracts._networkWithdraw, contracts._networkProposal)
+            abi.encodeWithSelector(IFeePool.init.selector, contracts._networkWithdrawal, contracts._networkProposal)
         );
         if (!success) {
             revert FailedToCall();
@@ -216,7 +216,7 @@ contract LsdNetworkFactory is Initializable, UUPSUpgradeable, ILsdNetworkFactory
                 contracts._userDeposit,
                 ethDepositAddress,
                 contracts._networkProposal,
-                bytes.concat(bytes1(0x01), bytes11(0), bytes20(contracts._networkWithdraw))
+                bytes.concat(bytes1(0x01), bytes11(0), bytes20(contracts._networkWithdrawal))
             )
         );
         if (!success) {
@@ -228,7 +228,7 @@ contract LsdNetworkFactory is Initializable, UUPSUpgradeable, ILsdNetworkFactory
                 IUserDeposit.init.selector,
                 _lsdToken,
                 contracts._nodeDeposit,
-                contracts._networkWithdraw,
+                contracts._networkWithdrawal,
                 contracts._networkProposal,
                 contracts._networkBalances
             )
@@ -237,9 +237,9 @@ contract LsdNetworkFactory is Initializable, UUPSUpgradeable, ILsdNetworkFactory
             revert FailedToCall();
         }
 
-        (success, data) = contracts._networkWithdraw.call(
+        (success, data) = contracts._networkWithdrawal.call(
             abi.encodeWithSelector(
-                INetworkWithdraw.init.selector,
+                INetworkWithdrawal.init.selector,
                 _lsdToken,
                 contracts._userDeposit,
                 contracts._networkProposal,

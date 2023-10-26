@@ -5,7 +5,7 @@ pragma solidity 0.8.19;
 import "./interfaces/IDepositEth.sol";
 import "./interfaces/ILsdToken.sol";
 import "./interfaces/IUserDeposit.sol";
-import "./interfaces/INetworkWithdraw.sol";
+import "./interfaces/INetworkWithdrawal.sol";
 import "./interfaces/INetworkProposal.sol";
 import "./interfaces/INetworkBalances.sol";
 import "@openzeppelin/contracts/proxy/utils/UUPSUpgradeable.sol";
@@ -16,7 +16,7 @@ contract UserDeposit is Initializable, UUPSUpgradeable, IUserDeposit {
     uint256 public minDeposit;
     address public lsdTokenAddress;
     address public nodeDepositAddress;
-    address public networkWithdrawAddress;
+    address public networkWithdrawalAddress;
     address public networkProposalAddress;
     address public networkBalancesAddress;
 
@@ -41,7 +41,7 @@ contract UserDeposit is Initializable, UUPSUpgradeable, IUserDeposit {
         depositEnabled = true;
         lsdTokenAddress = _lsdTokenAddress;
         nodeDepositAddress = _nodeDepositAddress;
-        networkWithdrawAddress = _networkWithdrawAddress;
+        networkWithdrawalAddress = _networkWithdrawAddress;
         networkProposalAddress = _networkProposalAddress;
         networkBalancesAddress = _networkBalancesAddress;
     }
@@ -93,17 +93,17 @@ contract UserDeposit is Initializable, UUPSUpgradeable, IUserDeposit {
         ILsdToken(lsdTokenAddress).mint(msg.sender, lsdTokenAmount);
 
         uint256 poolBalance = getBalance();
-        uint256 totalMissingAmountForWithdraw = INetworkWithdraw(networkWithdrawAddress).totalMissingAmountForWithdraw();
+        uint256 totalWithdrawalShortages = INetworkWithdrawal(networkWithdrawalAddress).totalWithdrawalShortages();
 
-        if (poolBalance > 0 && totalMissingAmountForWithdraw > 0) {
-            uint256 mvAmount = totalMissingAmountForWithdraw;
+        if (poolBalance > 0 && totalWithdrawalShortages > 0) {
+            uint256 mvAmount = totalWithdrawalShortages;
             if (poolBalance < mvAmount) {
                 mvAmount = poolBalance;
             }
-            INetworkWithdraw(networkWithdrawAddress).depositEthAndUpdateTotalMissingAmount{value: mvAmount}();
+            INetworkWithdrawal(networkWithdrawalAddress).depositEthAndUpdateTotalShortages{value: mvAmount}();
 
             // Emit excess withdrawn event
-            emit ExcessWithdrawn(networkWithdrawAddress, mvAmount, block.timestamp);
+            emit ExcessWithdrawn(networkWithdrawalAddress, mvAmount, block.timestamp);
         }
     }
 
@@ -111,7 +111,7 @@ contract UserDeposit is Initializable, UUPSUpgradeable, IUserDeposit {
 
     // Withdraw excess balance
     function withdrawExcessBalance(uint256 _amount) external override {
-        if (msg.sender != nodeDepositAddress && msg.sender != networkWithdrawAddress) {
+        if (msg.sender != nodeDepositAddress && msg.sender != networkWithdrawalAddress) {
             revert CallerNotAllowed();
         }
         // Check amount
@@ -124,10 +124,10 @@ contract UserDeposit is Initializable, UUPSUpgradeable, IUserDeposit {
     }
 
     // Recycle a deposit from withdraw
-    // Only accepts calls from  networkWithdraw
-    function recycleNetworkWithdrawDeposit() external payable override {
-        if (msg.sender != networkWithdrawAddress) {
-            revert CallerNotAllowed();
+    // Only accepts calls from networkWithdrawal
+    function recycleNetworkWithdrawalDeposit() external payable override {
+        if (msg.sender != networkWithdrawalAddress) {
+            revert AddressNotAllowed();
         }
         // Emit deposit recycled event
         emit DepositRecycled(msg.sender, msg.value, block.timestamp);

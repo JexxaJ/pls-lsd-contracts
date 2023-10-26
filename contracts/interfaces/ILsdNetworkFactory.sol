@@ -11,7 +11,7 @@ interface ILsdNetworkFactory is Errors, IUpgrade {
         address _networkProposal;
         address _nodeDeposit;
         address _userDeposit;
-        address _networkWithdraw;
+        address _networkWithdrawal;
         uint256 _block;
     }
 

@@ -38,7 +38,7 @@ contract NetworkBalances is Initializable, UUPSUpgradeable, INetworkBalances {
         networkProposalAddress = _networkProposalAddress;
         submitBalancesEnabled = true;
         rateChangeLimit = 11e14; //0.0011
-        updateBalancesEpochs = 225;
+        updateBalancesEpochs = 225; // 1day
     }
 
     function reinit() public virtual override reinitializer(1) {

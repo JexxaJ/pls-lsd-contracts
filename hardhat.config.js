@@ -3,11 +3,14 @@ require("@nomiclabs/hardhat-ethers");
 require("@nomiclabs/hardhat-web3");
 require("@nomiclabs/hardhat-etherscan");
 require("@nomicfoundation/hardhat-foundry");
+require('dotenv').config();
 
-// set proxy
-const { ProxyAgent, setGlobalDispatcher } = require("undici");
-const proxyAgent = new ProxyAgent('http://127.0.0.1:7890'); // change to yours
-setGlobalDispatcher(proxyAgent)
+if (process.env.HTTP_NETWORK_PROXY) {
+  // set proxy
+  const { ProxyAgent, setGlobalDispatcher } = require("undici");
+  const proxyAgent = new ProxyAgent(process.env.HTTP_NETWORK_PROXY);
+  setGlobalDispatcher(proxyAgent)
+}
 
 
 /** @type import('hardhat/config').HardhatUserConfig */
@@ -31,7 +34,7 @@ module.exports = {
       url: `https://eth-mainnet.g.alchemy.com/v2/${process.env.ALCHEMY_API_KEY}`,
     },
     goerli: {
-      url: `https://goerli.infura.io/v3/${process.env.INFURA_KEY}`,
+      url: process.env.GOERLI_RPC_URL,
     }
   },
   etherscan: {

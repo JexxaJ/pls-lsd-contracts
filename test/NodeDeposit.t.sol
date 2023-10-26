@@ -22,8 +22,8 @@ contract NodeDepositTest is Test {
     function setUp() public {
         ethDepositAddress = address(new DepositContract());
         ud = UserDeposit(address(new ERC1967Proxy(address(new UserDeposit()), "")));
-        lt = new LsdToken(address(ud), "rETH", "rETH");
-        // ud.init();
+        lt = new LsdToken("rETH", "rETH");
+        lt.initMinter(address(ud));
         nd = NodeDeposit(address(new ERC1967Proxy(address(new NodeDeposit()), "")));
         np = NetworkProposal(address(new ERC1967Proxy(address(new NetworkProposal()), "")));
         voters = new address[](3);

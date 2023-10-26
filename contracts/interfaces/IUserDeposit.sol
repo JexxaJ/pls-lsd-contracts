@@ -24,5 +24,5 @@ interface IUserDeposit is IRateProvider, Errors, IUpgrade {
 
     function withdrawExcessBalance(uint256 _amount) external;
 
-    function recycleNetworkWithdrawDeposit() external payable;
+    function recycleNetworkWithdrawalDeposit() external payable;
 }

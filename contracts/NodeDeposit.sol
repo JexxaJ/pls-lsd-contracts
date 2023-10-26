@@ -20,7 +20,7 @@ contract NodeDeposit is Initializable, UUPSUpgradeable, INodeDeposit {
     address public ethDepositAddress;
     address public networkProposalAddress;
 
-    bytes public withdrawCredentials;
+    bytes public withdrawalCredentials;
 
     address[] public nodes;
     mapping(bytes => PubkeyInfo) public pubkeyInfoOf;
@@ -58,7 +58,7 @@ contract NodeDeposit is Initializable, UUPSUpgradeable, INodeDeposit {
         userDepositAddress = _userDepositAddress;
         ethDepositAddress = _ethDepositAddress;
         networkProposalAddress = _networkProposalAddress;
-        withdrawCredentials = _withdrawCredentials;
+        withdrawalCredentials = _withdrawCredentials;
     }
 
     function reinit() public virtual override reinitializer(1) {
@@ -121,7 +121,7 @@ contract NodeDeposit is Initializable, UUPSUpgradeable, INodeDeposit {
     }
 
     function setWithdrawCredentials(bytes calldata _withdrawCredentials) external onlyAdmin {
-        withdrawCredentials = _withdrawCredentials;
+        withdrawalCredentials = _withdrawCredentials;
     }
 
     function addTrustNode(address _trustNodeAddress) external onlyAdmin {
@@ -274,7 +274,7 @@ contract NodeDeposit is Initializable, UUPSUpgradeable, INodeDeposit {
         });
 
         IDepositContract(ethDepositAddress).deposit{value: _depositAmount}(
-            _validatorPubkey, withdrawCredentials, _validatorSignature, _depositDataRoot
+            _validatorPubkey, withdrawalCredentials, _validatorSignature, _depositDataRoot
         );
 
         emit Deposited(msg.sender, _nodeType, _validatorPubkey, _validatorSignature, _depositAmount);
@@ -307,7 +307,7 @@ contract NodeDeposit is Initializable, UUPSUpgradeable, INodeDeposit {
         IUserDeposit(userDepositAddress).withdrawExcessBalance(willWithdrawAmount);
 
         IDepositContract(ethDepositAddress).deposit{value: willWithdrawAmount}(
-            _validatorPubkey, withdrawCredentials, _validatorSignature, _depositDataRoot
+            _validatorPubkey, withdrawalCredentials, _validatorSignature, _depositDataRoot
         );
 
         emit Staked(msg.sender, _validatorPubkey);

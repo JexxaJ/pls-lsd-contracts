@@ -27,13 +27,10 @@ describe('LsdNetwok test', function () {
     this.FactoryNetworkProposal = await ethers.getContractFactory('NetworkProposal', this.AccountDeployer)
     this.FactoryNodeDeposit = await ethers.getContractFactory('NodeDeposit', this.AccountDeployer)
     this.FactoryUserDeposit = await ethers.getContractFactory('UserDeposit', this.AccountDeployer)
-    this.FactoryNetworkWithdraw = await ethers.getContractFactory('NetworkWithdraw', this.AccountDeployer)
+    this.FactoryNetworkWithdrawal = await ethers.getContractFactory('NetworkWithdrawal', this.AccountDeployer)
 
     this.FactoryDepositContract = await ethers.getContractFactory('DepositContract', this.AccountDeployer)
-    this.FactoryTransparentUpgradeableProxy = await ethers.getContractFactory(
-      'TransparentUpgradeableProxy',
-      this.AccountDeployer,
-    )
+    this.FactoryUUPSUpgradeableProxy = await ethers.getContractFactory("ERC1967Proxy", this.AccountDeployer)
 
     // deploy mock contracts
     this.ContractDepositContract = await this.FactoryDepositContract.deploy()
@@ -48,6 +45,19 @@ describe('LsdNetwok test', function () {
     this.ContractFeePoolV2ExampleLogic = await this.FactoryFeePoolV2Example.deploy()
     await this.ContractFeePoolV2ExampleLogic.deployed()
     console.log('ContractFeePoolV2ExampleLogic address: ', this.ContractFeePoolV2ExampleLogic.address)
+        // this.FactoryFeePool = await ethers.getContractFactory("FeePool", this.AccountDeployer)
+        // this.FactoryFeePoolV2Example = await ethers.getContractFactory("FeePoolV2Example", this.AccountDeployer)
+        // this.FactoryFeePoolV3Example = await ethers.getContractFactory("FeePoolV3Example", this.AccountDeployer)
+        // this.FactoryLsdNetworkFactory = await ethers.getContractFactory("LsdNetworkFactory", this.AccountDeployer)
+        // this.FactoryLsdToken = await ethers.getContractFactory("LsdToken", this.AccountDeployer)
+        // this.FactoryNetworkBalances = await ethers.getContractFactory("NetworkBalances", this.AccountDeployer)
+        // this.FactoryNetworkProposal = await ethers.getContractFactory("NetworkProposal", this.AccountDeployer)
+        // this.FactoryNodeDeposit = await ethers.getContractFactory("NodeDeposit", this.AccountDeployer)
+        // this.FactoryUserDeposit = await ethers.getContractFactory("UserDeposit", this.AccountDeployer)
+        // this.FactoryNetworkWithdrawal = await ethers.getContractFactory("NetworkWithdrawal", this.AccountDeployer)
+
+        // this.FactoryDepositContract = await ethers.getContractFactory("DepositContract", this.AccountDeployer)
+        // this.FactoryUUPSUpgradeableProxy = await ethers.getContractFactory("ERC1967Proxy", this.AccountDeployer)
 
     this.ContractFeePoolV3ExampleLogic = await this.FactoryFeePoolV3Example.deploy()
     await this.ContractFeePoolV3ExampleLogic.deployed()
@@ -69,9 +79,9 @@ describe('LsdNetwok test', function () {
     await this.ContractUserDepositLogic.deployed()
     console.log('ContractUserDepositLogic address: ', this.ContractUserDepositLogic.address)
 
-    this.ContractNetworkWithdrawLogic = await this.FactoryNetworkWithdraw.deploy()
-    await this.ContractNetworkWithdrawLogic.deployed()
-    console.log('ContractNetworkWithdrawLogic address: ', this.ContractNetworkWithdrawLogic.address)
+    this.ContractNetworkWithdrawalLogic = await this.FactoryNetworkWithdrawal.deploy()
+    await this.ContractNetworkWithdrawalLogic.deployed()
+    console.log('ContractNetworkWithdrawalLogic address: ', this.ContractNetworkWithdrawalLogic.address)
 
     // deploy factory logic contract
     this.ContractLsdNetworkFactoryLogic = await this.FactoryLsdNetworkFactory.deploy()
@@ -81,16 +91,15 @@ describe('LsdNetwok test', function () {
 
   beforeEach(async function () {
     // deploy factory proxy contract
-    this.ContractTransparentUpgradeableProxy = await this.FactoryTransparentUpgradeableProxy.deploy(
+    this.ContractUUPSUpgradeableProxy = await this.FactoryUUPSUpgradeableProxy.connect(this.FactoryProxyAdmin).deploy(
       this.ContractLsdNetworkFactoryLogic.address,
-      this.FactoryProxyAdmin.address,
-      '0x',
+      "0x",
     )
-    await this.ContractTransparentUpgradeableProxy.deployed()
+    await this.ContractUUPSUpgradeableProxy.deployed()
 
     this.ContractLsdNetworkFactory = await ethers.getContractAt(
       'LsdNetworkFactory',
-      this.ContractTransparentUpgradeableProxy.address,
+      this.ContractUUPSUpgradeableProxy.address,
     )
   })
 
@@ -104,7 +113,7 @@ describe('LsdNetwok test', function () {
       this.ContractNetworkProposalLogic.address,
       this.ContractNodeDepositLogic.address,
       this.ContractUserDepositLogic.address,
-      this.ContractNetworkWithdrawLogic.address,
+      this.ContractNetworkWithdrawalLogic.address,
     )
 
     console.log('ContractLsdNetworkFactory address: ', this.ContractLsdNetworkFactory.address)
@@ -156,7 +165,7 @@ describe('LsdNetwok test', function () {
       this.ContractNetworkProposalLogic.address,
       this.ContractNodeDepositLogic.address,
       this.ContractUserDepositLogic.address,
-      this.ContractNetworkWithdrawLogic.address,
+      this.ContractNetworkWithdrawalLogic.address,
     )
     console.log('ContractLsdNetworkFactory address: ', this.ContractLsdNetworkFactory.address)
 
@@ -207,7 +216,7 @@ describe('LsdNetwok test', function () {
       this.ContractNetworkProposalLogic.address,
       this.ContractNodeDepositLogic.address,
       this.ContractUserDepositLogic.address,
-      this.ContractNetworkWithdrawLogic.address,
+      this.ContractNetworkWithdrawalLogic.address,
     )
     console.log('ContractLsdNetworkFactory address: ', this.ContractLsdNetworkFactory.address)
 

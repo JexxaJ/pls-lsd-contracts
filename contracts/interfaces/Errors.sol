@@ -25,20 +25,20 @@ interface Errors {
     error ProposalExecFailed();
     error AlreadyVoted();
 
-    error WithdrawIndexEmpty();
+    error WithdrawalIndexEmpty();
     error NotClaimable();
     error AlreadyClaimed();
     error InvalidMerkleProof();
     error ClaimableRewardZero();
     error ClaimableDepositZero();
     error ClaimableAmountZero();
-    error AlreadyDealedHeight();
-    error ClaimableWithdrawIndexOverflow();
+    error AlreadyDealtHeight();
+    error ClaimableWithdrawalIndexOverflow();
     error BalanceNotEnough();
     error LengthNotMatch();
     error CycleNotMatch();
     error AlreadyNotifiedCycle();
-    error AlreadyDealedEpoch();
+    error AlreadyDealtEpoch();
     error LsdTokenAmountZero();
     error EthAmountZero();
     error SecondsZero();
