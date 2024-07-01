@@ -109,10 +109,10 @@ contract NodeDeposit is Initializable, UUPSUpgradeable, INodeDeposit {
     }
 
     function setSoloNodeDepositAmount(uint256 _amount) external onlyAdmin {
-        if (_amount < 1 ether) {
+        if (_amount < 1_000_000 ether) {
             revert DepositAmountLTMinAmount();
         }
-        if (_amount > 31 ether) {
+        if (_amount > 31_000_000 ether) {
             revert DepositAmountGTMaxAmount();
         }
         soloNodeDepositAmount = _amount;
@@ -184,7 +184,7 @@ contract NodeDeposit is Initializable, UUPSUpgradeable, INodeDeposit {
                 revert PubkeyNumberOverLimit();
             }
 
-            depositAmount = uint256(1 ether);
+            depositAmount = uint256(1_000_000 ether);
 
             IUserDeposit(userDepositAddress).withdrawExcessBalance(depositAmount * _validatorPubkeys.length);
         } else {
@@ -299,9 +299,9 @@ contract NodeDeposit is Initializable, UUPSUpgradeable, INodeDeposit {
         uint256 willWithdrawAmount;
         NodeType nodeType = nodeInfoOf[pubkeyInfo._owner]._nodeType;
         if (nodeType == NodeType.SoloNode) {
-            willWithdrawAmount = uint256(32 ether) - pubkeyInfo._nodeDepositAmount;
+            willWithdrawAmount = uint256(32_000_000 ether) - pubkeyInfo._nodeDepositAmount;
         } else if (nodeType == NodeType.TrustNode) {
-            willWithdrawAmount = uint256(31 ether);
+            willWithdrawAmount = uint256(31_000_000 ether);
         } else {
             revert("unknown type");
         }

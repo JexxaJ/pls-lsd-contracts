@@ -45,7 +45,10 @@ module.exports = {
     },
     holesky: {
       url: `${process.env.HOLESKY_RPC_URL}`,
-    }
+    },
+    pulse_testnet: {
+      url: `${process.env.PULSE_TESTNET_RPC_URL}`,
+    },
   },
   etherscan: {
     // Your API key for Etherscan
