@@ -39,8 +39,8 @@ contract LsdNetworkFactory is Initializable, UUPSUpgradeable, ILsdNetworkFactory
     uint8 public entrustWithThreshold;
     EnumerableSet.AddressSet private entrustedLsdTokens;
     uint256 public totalClaimedStackFee;
-    bool public limitCreation;
-    EnumerableSet.AddressSet private creationWhitelistUsers;
+    bool public onlyCreationWhitelister;
+    EnumerableSet.AddressSet private creationWhitelister;
 
     modifier onlyFactoryAdmin() {
         if (msg.sender != factoryAdmin) {
@@ -97,8 +97,8 @@ contract LsdNetworkFactory is Initializable, UUPSUpgradeable, ILsdNetworkFactory
         return lsdTokensOf[_creater];
     }
 
-    function getCreationWhitelistUsers() public view returns (address[] memory) {
-        return creationWhitelistUsers.values();
+    function getCreationWhitelister() public view returns (address[] memory) {
+        return creationWhitelister.values();
     }
 
     // ------------ settings ------------
@@ -182,16 +182,16 @@ contract LsdNetworkFactory is Initializable, UUPSUpgradeable, ILsdNetworkFactory
         return entrustedLsdTokens.remove(_lsdToken);
     }
 
-    function setLimitCreation(bool _limitCreation) external onlyFactoryAdmin {
-        limitCreation = _limitCreation;
+    function setOnlyCreationWhitelister(bool _onlyCreationWhitelister) external onlyFactoryAdmin {
+        onlyCreationWhitelister = _onlyCreationWhitelister;
     }
 
     function addUserToCreationWhitelist(address user) external onlyFactoryAdmin returns (bool) {
-        return creationWhitelistUsers.add(user);
+        return creationWhitelister.add(user);
     }
 
     function removeUserFromCreationWhitelist(address user) external onlyFactoryAdmin returns (bool) {
-        return creationWhitelistUsers.remove(user);
+        return creationWhitelister.remove(user);
     }
 
     // ------------ user ------------
@@ -253,7 +253,7 @@ contract LsdNetworkFactory is Initializable, UUPSUpgradeable, ILsdNetworkFactory
     function _createLsdNetwork(address _lsdToken, address _networkAdmin, address _voterManager, address[] memory _voters, uint256 _threshold)
         private
     {
-        if (limitCreation && !creationWhitelistUsers.contains(msg.sender)) {
+        if (onlyCreationWhitelister && !creationWhitelister.contains(msg.sender)) {
             revert CallerNotAllowed();
         }
 
