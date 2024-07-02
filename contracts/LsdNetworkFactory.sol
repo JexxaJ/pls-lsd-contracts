@@ -39,6 +39,8 @@ contract LsdNetworkFactory is Initializable, UUPSUpgradeable, ILsdNetworkFactory
     uint8 public entrustWithThreshold;
     EnumerableSet.AddressSet private entrustedLsdTokens;
     uint256 public totalClaimedStackFee;
+    bool public limitCreation;
+    EnumerableSet.AddressSet private creationWhitelistUsers;
 
     modifier onlyFactoryAdmin() {
         if (msg.sender != factoryAdmin) {
@@ -93,6 +95,10 @@ contract LsdNetworkFactory is Initializable, UUPSUpgradeable, ILsdNetworkFactory
 
     function lsdTokensOfCreater(address _creater) public view returns (address[] memory) {
         return lsdTokensOf[_creater];
+    }
+
+    function getCreationWhitelistUsers() public view returns (address[] memory) {
+        return creationWhitelistUsers.values();
     }
 
     // ------------ settings ------------
@@ -176,6 +182,18 @@ contract LsdNetworkFactory is Initializable, UUPSUpgradeable, ILsdNetworkFactory
         return entrustedLsdTokens.remove(_lsdToken);
     }
 
+    function setLimitCreation(bool _limitCreation) external onlyFactoryAdmin {
+        limitCreation = _limitCreation;
+    }
+
+    function addUserToCreationWhitelist(address user) external onlyFactoryAdmin returns (bool) {
+        return creationWhitelistUsers.add(user);
+    }
+
+    function removeUserFromCreationWhitelist(address user) external onlyFactoryAdmin returns (bool) {
+        return creationWhitelistUsers.remove(user);
+    }
+
     // ------------ user ------------
 
     function createLsdNetwork(
@@ -235,6 +253,10 @@ contract LsdNetworkFactory is Initializable, UUPSUpgradeable, ILsdNetworkFactory
     function _createLsdNetwork(address _lsdToken, address _networkAdmin, address _voterManager, address[] memory _voters, uint256 _threshold)
         private
     {
+        if (limitCreation && !creationWhitelistUsers.contains(msg.sender)) {
+            revert CallerNotAllowed();
+        }
+
         NetworkContracts memory contracts = deployNetworkContracts();
         if (0 != networkContractsOfLsdToken[_lsdToken]._block) {
             revert LsdTokenCanOnlyUseOnce();
