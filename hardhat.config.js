@@ -56,6 +56,7 @@ module.exports = {
     apiKey: {
       goerli: `${process.env.ETHERSCAN_KEY}`,
       holesky: `${process.env.ETHERSCAN_KEY}`,
+      pulse_testnet: "ok", // empty is OK for pulse testnet
     },
     customChains: [
       {
@@ -65,7 +66,18 @@ module.exports = {
           apiURL: "https://api-holesky.etherscan.io/api",
           browserURL: "https://holesky.etherscan.io"
         }
+      },
+      {
+        network: "pulse_testnet",
+        chainId: 943,
+        urls: {
+          apiURL: "https://api.scan.v4.testnet.pulsechain.com/api",
+          browserURL: "https://scan.v4.testnet.pulsechain.com",
+        }
       }
     ]
+  },
+  sourcify: {
+    enabled: false
   }
 };
