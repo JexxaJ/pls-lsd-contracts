@@ -246,7 +246,6 @@ contract NodeDeposit is Initializable, UUPSUpgradeable, INodeDeposit {
     // ------------ network ------------
 
     // Deposit ETH from deposit pool
-    // Only accepts calls from the UserDeposit contract
     function depositEth() external payable override {
         // Emit ether deposited event
         emit EtherDeposited(msg.sender, msg.value, block.timestamp);
