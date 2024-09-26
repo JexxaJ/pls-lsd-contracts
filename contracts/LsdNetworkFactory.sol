@@ -203,7 +203,7 @@ contract LsdNetworkFactory is Initializable, UUPSUpgradeable, ILsdNetworkFactory
         address[] memory _voters,
         uint256 _threshold
     ) external override {
-        address lsdToken = NewContractLib.newLsdToken(_lsdTokenName, _lsdTokenSymbol);
+        address lsdToken = NewContractLib.newLsdToken(computeSalt(), _lsdTokenName, _lsdTokenSymbol);
         if (address(0) == _networkAdmin) {
             revert AddressNotAllowed();
         }
@@ -219,8 +219,8 @@ contract LsdNetworkFactory is Initializable, UUPSUpgradeable, ILsdNetworkFactory
         uint256 _minDelay,
         address[] memory _proposers
     ) external override {
-        address networkAdmin = NewContractLib.newTimelock(_minDelay, _proposers, _proposers, msg.sender);
-        address lsdToken = NewContractLib.newLsdToken(_lsdTokenName, _lsdTokenSymbol);
+        address networkAdmin = NewContractLib.newTimelock(computeSalt(), _minDelay, _proposers, _proposers, msg.sender);
+        address lsdToken = NewContractLib.newLsdToken(computeSalt(), _lsdTokenName, _lsdTokenSymbol);
 
         _createLsdNetwork(lsdToken, networkAdmin, networkAdmin, _voters, _threshold);
     }
@@ -236,7 +236,7 @@ contract LsdNetworkFactory is Initializable, UUPSUpgradeable, ILsdNetworkFactory
         if (address(0) == _networkAdmin) {
             revert AddressNotAllowed();
         }
-        address lsdToken = NewContractLib.newLsdToken(_lsdTokenName, _lsdTokenSymbol);
+        address lsdToken = NewContractLib.newLsdToken(computeSalt(), _lsdTokenName, _lsdTokenSymbol);
         entrustedLsdTokens.add(lsdToken);
 
         _createLsdNetwork(lsdToken, _networkAdmin, factoryAdmin, getEntrustWithVoters(), entrustWithThreshold);
@@ -344,7 +344,7 @@ contract LsdNetworkFactory is Initializable, UUPSUpgradeable, ILsdNetworkFactory
     }
 
     function deploy(address _logicAddress) private returns (address) {
-        return NewContractLib.newERC1967Proxy(_logicAddress);
+        return NewContractLib.newERC1967Proxy(computeSalt(), _logicAddress);
     }
 
     function deployNetworkContracts() private returns (NetworkContracts memory) {
@@ -358,5 +358,9 @@ contract LsdNetworkFactory is Initializable, UUPSUpgradeable, ILsdNetworkFactory
         return NetworkContracts(
             feePool, networkBalances, networkProposal, nodeDeposit, userDeposit, networkWithdraw, block.number
         );
+    }
+
+    function computeSalt() internal view returns (bytes32) {
+        return keccak256(abi.encodePacked(msg.sender, block.number));
     }
 }
