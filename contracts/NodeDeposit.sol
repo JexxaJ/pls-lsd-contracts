@@ -177,7 +177,7 @@ contract NodeDeposit is Initializable, UUPSUpgradeable, INodeDeposit {
             if (!trustNodeDepositEnabled) {
                 revert TrustNodeDepositDisabled();
             }
-            if (msg.value > 0) {
+            if (msg.value != 0) {
                 revert AmountNotZero();
             }
             if (pubkeysOfNode[msg.sender].length + _validatorPubkeys.length > trustNodePubkeyNumberLimit) {
@@ -302,7 +302,7 @@ contract NodeDeposit is Initializable, UUPSUpgradeable, INodeDeposit {
         } else if (nodeType == NodeType.TrustNode) {
             willWithdrawAmount = uint256(31_000_000 ether);
         } else {
-            revert("unknown type");
+            revert UnknownNodeType();
         }
 
         IUserDeposit(userDepositAddress).withdrawExcessBalance(willWithdrawAmount);

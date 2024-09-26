@@ -172,7 +172,7 @@ contract NetworkWithdraw is Initializable, UUPSUpgradeable, INetworkWithdraw {
         uint256 stakePoolBalance = userDeposit.getBalance();
 
         uint256 totalMissingAmount = totalMissingAmountForWithdraw + ethAmount;
-        if (stakePoolBalance > 0) {
+        if (stakePoolBalance != 0) {
             uint256 mvAmount = totalMissingAmount;
             if (stakePoolBalance < mvAmount) {
                 mvAmount = stakePoolBalance;
@@ -220,7 +220,7 @@ contract NetworkWithdraw is Initializable, UUPSUpgradeable, INetworkWithdraw {
             totalAmount = totalAmount + withdrawalAtIndex[withdrawalIndex]._amount;
         }
 
-        if (totalAmount > 0) {
+        if (totalAmount != 0) {
             (bool success,) = msg.sender.call{value: totalAmount}("");
             if (!success) {
                 revert FailedToCall();
@@ -280,7 +280,7 @@ contract NetworkWithdraw is Initializable, UUPSUpgradeable, INetworkWithdraw {
             totalClaimedRewardOfNode[_account] = _totalRewardAmount;
             totalClaimedDepositOfNode[_account] = _totalExitDepositAmount;
         } else {
-            revert("unknown claimType");
+            revert UnknownClaimType();
         }
 
         (bool success,) = _account.call{value: willClaimAmount}("");
@@ -307,14 +307,14 @@ contract NetworkWithdraw is Initializable, UUPSUpgradeable, INetworkWithdraw {
             latestDistributeHeight = latestDistributePriorityFeeHeight;
             latestDistributePriorityFeeHeight = _dealedHeight;
 
-            if (totalAmount > 0) {
+            if (totalAmount != 0) {
                 IFeePool(feePoolAddress).withdrawEther(totalAmount);
             }
         } else if (_distributeType == DistributeType.DistributeWithdrawals) {
             latestDistributeHeight = latestDistributeWithdrawalsHeight;
             latestDistributeWithdrawalsHeight = _dealedHeight;
         } else {
-            revert("unknown distribute type");
+            revert UnknownDistributeType();
         }
 
         if (_dealedHeight <= latestDistributeHeight) {
@@ -340,7 +340,7 @@ contract NetworkWithdraw is Initializable, UUPSUpgradeable, INetworkWithdraw {
             totalMissingAmountForWithdraw = totalMissingAmountForWithdraw - _userAmount;
         }
 
-        if (mvAmount > 0) {
+        if (mvAmount != 0) {
             IUserDeposit(userDepositAddress).recycleNetworkWithdrawDeposit{value: mvAmount}();
         }
 
@@ -368,7 +368,7 @@ contract NetworkWithdraw is Initializable, UUPSUpgradeable, INetworkWithdraw {
         if (_ejectedStartCycle >= _withdrawCycle || _withdrawCycle + 1 != currentWithdrawCycle()) {
             revert CycleNotMatch();
         }
-        if (ejectedValidatorsAtCycle[_withdrawCycle].length > 0) {
+        if (ejectedValidatorsAtCycle[_withdrawCycle].length != 0) {
             revert AlreadyNotifiedCycle();
         }
 
@@ -403,7 +403,7 @@ contract NetworkWithdraw is Initializable, UUPSUpgradeable, INetworkWithdraw {
 
     // Deposit ETH from deposit pool and update totalMissingAmountForWithdraw
     function depositEthAndUpdateTotalMissingAmount() external payable override {
-        totalMissingAmountForWithdraw -= msg.value;
+        totalMissingAmountForWithdraw = totalMissingAmountForWithdraw - msg.value;
         // Emit ether deposited event
         emit EtherDeposited(msg.sender, msg.value, block.timestamp);
     }
@@ -436,7 +436,7 @@ contract NetworkWithdraw is Initializable, UUPSUpgradeable, INetworkWithdraw {
         }
         uint256 stackFee = (_amount * stackCommissionRate) / 1e18;
         uint256 platformAmount = _amount - stackFee;
-        totalPlatformCommission += platformAmount;
+        totalPlatformCommission = totalPlatformCommission + platformAmount;
 
         (bool success,) = factoryAddress.call{value: stackFee}("");
         if (!success) {

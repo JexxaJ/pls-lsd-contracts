@@ -96,6 +96,10 @@ contract NetworkBalances is Initializable, UUPSUpgradeable, INetworkBalances {
         updateBalancesEpochs = _value;
     }
 
+    function setSubmitBalancesEnabled(bool _enabled) external onlyAdmin {
+        submitBalancesEnabled = _enabled;
+    }
+
     // ------------ voter ------------
 
     // Submit network balances for a block
@@ -109,6 +113,9 @@ contract NetworkBalances is Initializable, UUPSUpgradeable, INetworkBalances {
             revert SubmitBalancesDisabled();
         }
         if (_block <= balancesSnapshot._block) {
+            revert BlockNotMatch();
+        }
+        if (_block >= block.number) {
             revert BlockNotMatch();
         }
 

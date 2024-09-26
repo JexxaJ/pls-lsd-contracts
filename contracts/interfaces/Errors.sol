@@ -61,4 +61,7 @@ interface Errors {
     error UserDepositDisabled();
     error DepositAmountLTMinAmount();
     error DepositAmountGTMaxAmount();
+    error UnknownClaimType();
+    error UnknownDistributeType();
+    error UnknownNodeType();
 }
