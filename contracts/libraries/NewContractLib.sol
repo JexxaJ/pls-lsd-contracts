@@ -7,19 +7,20 @@ import "../LsdToken.sol";
 
 library NewContractLib {
     function newTimelock(
-        uint256 minDelay, address[] memory proposers, address[] memory executors, address admin
+        bytes32 salt, uint256 minDelay, address[] memory proposers, address[] memory executors, address admin
     ) public returns (address) {
-        return address(new Timelock(minDelay, proposers, executors, admin));
+        return address(new Timelock{salt: salt}(minDelay, proposers, executors, admin));
     }
 
-    function newERC1967Proxy(address _logicAddress) public returns (address) {
-        return address(new ERC1967Proxy(_logicAddress, ""));
+    function newERC1967Proxy(bytes32 salt, address _logicAddress) public returns (address) {
+        return address(new ERC1967Proxy{salt: salt}(_logicAddress, ""));
     }
 
     function newLsdToken(
+        bytes32 salt,
         string memory _lsdTokenName,
         string memory _lsdTokenSymbol
     ) public returns (address) {
-        return address(new LsdToken(_lsdTokenName, _lsdTokenSymbol));
+        return address(new LsdToken{salt: salt}(_lsdTokenName, _lsdTokenSymbol));
     }
 }
