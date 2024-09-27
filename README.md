@@ -1,8 +1,8 @@
-# eth-lsd-contracts
+# pls-lsd-contracts
 
-Contracts is the foundation of ETH LSD stack. It consists of LsdToken, UserDeposit, NodeDeposit and NetworkWithdraw and other contracts, which enables users to stake, unstake and withdraw, validators to run node with minimum amount of ETH and platform to manage solo and trust nodes. 
+Contracts is the foundation of the Forked ETH LSD stack from StaFi. It consists of LsdToken, UserDeposit, NodeDeposit and NetworkWithdraw and other contracts, which enables users to stake, unstake and withdraw, validators to run nodes with minimum amount of PLS and platform to manage solo and trust nodes. 
 
-To learn more about ETH LSD stack, see [**ETH LSD Stack Documentation and Guide**](https://github.com/stafiprotocol/stack-docs/blob/main/README.md#eth-lsd-stack)
+To learn more about PLS LSD stack, see [**Vouch LSD Documentation and Guide**](https://vouch.run)
 
 a very brief diagrams of the workflow:
 
@@ -12,10 +12,10 @@ participant  UserDeposit.sol
 actor User
 participant  NetworkWithdraw.sol
 
-User->>UserDeposit.sol: stake ETH
-UserDeposit.sol->>User: mint rToken
-User->>NetworkWithdraw.sol: unstake rToken 
-NetworkWithdraw.sol->>User: transfer ETH
+User->>UserDeposit.sol: stake PLS
+UserDeposit.sol->>User: mint vPLS
+User->>NetworkWithdraw.sol: unstake vPLS 
+NetworkWithdraw.sol->>User: transfer PLS
 ```
 
 ```mermaid
